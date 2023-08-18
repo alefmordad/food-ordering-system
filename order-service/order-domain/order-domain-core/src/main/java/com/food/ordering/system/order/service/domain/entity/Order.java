@@ -1,0 +1,125 @@
+package com.food.ordering.system.order.service.domain.entity;
+
+import com.food.ordering.system.domain.entity.AggregateRoot;
+import com.food.ordering.system.domain.valueobject.*;
+import com.food.ordering.system.order.service.domain.exception.OrderDomainException;
+import com.food.ordering.system.order.service.domain.valueobject.OrderItemId;
+import com.food.ordering.system.order.service.domain.valueobject.StreetAddress;
+import com.food.ordering.system.order.service.domain.valueobject.TrackingId;
+import lombok.Getter;
+import lombok.experimental.SuperBuilder;
+
+import java.util.List;
+import java.util.UUID;
+import java.util.concurrent.atomic.AtomicLong;
+
+@Getter
+@SuperBuilder
+public class Order extends AggregateRoot<OrderId> {
+
+	private final CustomerId customerId;
+	private final RestaurantId restaurantId;
+	private final StreetAddress deliveryAddress;
+	private final Money price;
+	private final List<OrderItem> items;
+
+	private TrackingId trackingId;
+	private OrderStatus orderStatus;
+	private List<String> failureMessages;
+
+	public void initializeOrder() {
+		// id of order, its trackingId, and its items are filled with order itself
+		// also orderStatus is changed by stateChanger methods
+		// these fields are set according to business rules
+		// but other fields are given through builder in application service by client actually
+		setId(new OrderId(UUID.randomUUID()));
+		trackingId = new TrackingId(UUID.randomUUID());
+		orderStatus = OrderStatus.PENDING;
+		initializeOrderItems();
+	}
+
+	public void validateOrder() {
+		validateInitialOrder();
+		validateTotalPrice();
+		validateItemsPrice();
+	}
+
+	public void pay() {
+		if (orderStatus != OrderStatus.PENDING) {
+			throw new OrderDomainException("Order is not in correct state for pay operation!");
+		}
+		orderStatus = OrderStatus.PAID;
+	}
+
+	public void approve() {
+		if (orderStatus != OrderStatus.PAID) {
+			throw new OrderDomainException("Order is not in correct state for approve operation!");
+		}
+		orderStatus = OrderStatus.APPROVED;
+	}
+
+	/**
+	 * if restaurant service does not approve order
+	 */
+	public void initCancel(List<String> failureMessages) {
+		if (orderStatus != OrderStatus.PAID) {
+			throw new OrderDomainException("Order is not in correct state for initCancel operation!");
+		}
+		orderStatus = OrderStatus.CANCELLING;
+		updateFailureMessages(failureMessages);
+	}
+
+	public void cancel(List<String> failureMessages) {
+		if (orderStatus != OrderStatus.PENDING && orderStatus != OrderStatus.CANCELLING) {
+			throw new OrderDomainException("Order is not in correct state for cancel operation!");
+		}
+		orderStatus = OrderStatus.CANCELLED;
+		updateFailureMessages(failureMessages);
+	}
+
+	private void updateFailureMessages(List<String> failureMessages) {
+		if (this.failureMessages != null && failureMessages != null) {
+			this.failureMessages.addAll(failureMessages.stream().filter(message -> !message.isEmpty()).toList());
+		}
+		if (this.failureMessages == null) {
+			this.failureMessages = failureMessages;
+		}
+	}
+
+	private void validateInitialOrder() {
+		if (orderStatus != null || getId() != null) {
+			throw new OrderDomainException("Order is not in correct state for initialization!");
+		}
+	}
+
+	private void validateTotalPrice() {
+		if (price == null || !price.isGreaterThanZero()) {
+			throw new OrderDomainException("Total price must be greater than zero!");
+		}
+	}
+
+	private void validateItemsPrice() {
+		Money orderItemsTotal = items.stream().map(orderItem -> {
+			validatedItemPrice(orderItem);
+			return orderItem.getSubTotal();
+		}).reduce(Money.ZERO, Money::add);
+
+		if (!price.equals(orderItemsTotal)) {
+			throw new OrderDomainException("Total price: " + price.getAmount()
+					+ " is not equal to Order items total: " + orderItemsTotal.getAmount() + "!");
+		}
+	}
+
+	private void validatedItemPrice(OrderItem orderItem) {
+		if (!orderItem.isPriceValid()) {
+			throw new OrderDomainException("Order items price: " + orderItem.getPrice().getAmount()
+					+ " is not valid for product " + orderItem.getProduct().getId().getValue());
+		}
+	}
+
+	private void initializeOrderItems() {
+		AtomicLong itemId = new AtomicLong(1);
+		items.forEach(orderItem -> orderItem.initializeOrderItem(getId(), new OrderItemId(itemId.getAndIncrement())));
+	}
+
+}

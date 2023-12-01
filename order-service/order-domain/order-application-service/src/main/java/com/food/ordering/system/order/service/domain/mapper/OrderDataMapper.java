@@ -8,6 +8,7 @@ import com.food.ordering.system.order.service.domain.dto.create.CreateOrderComma
 import com.food.ordering.system.order.service.domain.dto.create.CreateOrderResponse;
 import com.food.ordering.system.order.service.domain.dto.create.OrderAddress;
 import com.food.ordering.system.order.service.domain.dto.create.OrderItem;
+import com.food.ordering.system.order.service.domain.dto.track.TrackOrderResponse;
 import com.food.ordering.system.order.service.domain.entity.Order;
 import com.food.ordering.system.order.service.domain.entity.Product;
 import com.food.ordering.system.order.service.domain.entity.Restaurant;
@@ -19,7 +20,7 @@ import java.util.UUID;
 import java.util.stream.Collectors;
 
 @Component
-// it is actually a factory class
+// mj: it is actually a factory class
 public class OrderDataMapper {
 
 	public Restaurant orderCommandToRestaurant(CreateOrderCommand createOrderCommand) {
@@ -42,10 +43,19 @@ public class OrderDataMapper {
 				.build();
 	}
 
-	public CreateOrderResponse orderToCreateOrderResponse(Order order) {
+	public CreateOrderResponse orderToCreateOrderResponse(Order order, String message) {
 		return CreateOrderResponse.builder()
 				.orderTrackingId(order.getTrackingId().getValue())
 				.orderStatus(order.getOrderStatus())
+				.message(message)
+				.build();
+	}
+
+	public TrackOrderResponse orderToTrackOrderResponse(Order order) {
+		return TrackOrderResponse.builder()
+				.orderTrackingId(order.getTrackingId().getValue())
+				.orderStatus(order.getOrderStatus())
+				.failureMessages(order.getFailureMessages())
 				.build();
 	}
 

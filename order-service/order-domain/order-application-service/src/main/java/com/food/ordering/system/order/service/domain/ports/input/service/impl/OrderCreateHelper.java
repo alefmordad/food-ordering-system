@@ -1,5 +1,6 @@
-package com.food.ordering.system.order.service.domain;
+package com.food.ordering.system.order.service.domain.ports.input.service.impl;
 
+import com.food.ordering.system.order.service.domain.OrderDomainService;
 import com.food.ordering.system.order.service.domain.dto.create.CreateOrderCommand;
 import com.food.ordering.system.order.service.domain.entity.Customer;
 import com.food.ordering.system.order.service.domain.entity.Order;
@@ -30,7 +31,7 @@ public class OrderCreateHelper {
 	private final OrderDataMapper orderDataMapper;
 
 	@Transactional
-	// method with @Transactional should be public
+	// mj: method with @Transactional should be public
 	public OrderCreatedEvent persistOrder(CreateOrderCommand createOrderCommand) {
 		checkCustomer(createOrderCommand.customerId());
 		Restaurant restaurant = checkRestaurant(createOrderCommand);
@@ -52,8 +53,8 @@ public class OrderCreateHelper {
 		return optionalRestaurant.get();
 	}
 
-	// if we had to do more business-related checks about customer, we would have sent it to domain service
-	// however checking the existence does not need domain service
+	// mj: if we had to do more business-related checks about customer, we would have sent it to domain service
+	// mj: however checking the existence does not need domain service
 	private void checkCustomer(UUID customerId) {
 		Optional<Customer> customer = customerRepository.findCustomer(customerId);
 		if (customer.isEmpty()) {

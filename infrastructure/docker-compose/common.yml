@@ -1,0 +1,7 @@
+version: '3.7'
+
+networks:
+  food-ordering-system:
+    driver: bridge
+#    driver: bridge means that every container can reach other containers in the food-ordering-system network using name
+

@@ -28,10 +28,10 @@ public class Order extends AggregateRoot<OrderId> {
 	private List<String> failureMessages;
 
 	public void initializeOrder() {
-		// id of order, its trackingId, and its items are filled with order itself
-		// also orderStatus is changed by stateChanger methods
-		// these fields are set according to business rules
-		// but other fields are given through builder in application service by client actually
+		// mj: id of order, its trackingId, and its items are filled with order itself
+		// mj: also orderStatus is changed by stateChanger methods
+		// mj: these fields are set according to business rules
+		// mj: but other fields are given through builder in application service by client actually
 		setId(new OrderId(UUID.randomUUID()));
 		trackingId = new TrackingId(UUID.randomUUID());
 		orderStatus = OrderStatus.PENDING;

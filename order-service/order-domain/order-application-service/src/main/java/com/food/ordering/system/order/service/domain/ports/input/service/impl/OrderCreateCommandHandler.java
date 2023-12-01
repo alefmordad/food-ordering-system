@@ -1,4 +1,4 @@
-package com.food.ordering.system.order.service.domain;
+package com.food.ordering.system.order.service.domain.ports.input.service.impl;
 
 import com.food.ordering.system.order.service.domain.dto.create.CreateOrderCommand;
 import com.food.ordering.system.order.service.domain.dto.create.CreateOrderResponse;
@@ -22,7 +22,7 @@ public class OrderCreateCommandHandler {
 		OrderCreatedEvent orderCreatedEvent = orderCreateHelper.persistOrder(createOrderCommand);
 		log.info("Order is created with id: {}", orderCreatedEvent.getOrder().getId().getValue());
 		orderCreatedPaymentRequestMessagePublisher.publish(orderCreatedEvent);
-		return orderDataMapper.orderToCreateOrderResponse(orderCreatedEvent.getOrder());
+		return orderDataMapper.orderToCreateOrderResponse(orderCreatedEvent.getOrder(), "Order created successfully");
 	}
 
 }

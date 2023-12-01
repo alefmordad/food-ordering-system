@@ -6,7 +6,7 @@ import java.util.Optional;
 
 public interface RestaurantRepository {
 
-	// filling details of products
+	// mj: filling details of products
 	Optional<Restaurant> findRestaurantInformation(Restaurant restaurant);
 
 }

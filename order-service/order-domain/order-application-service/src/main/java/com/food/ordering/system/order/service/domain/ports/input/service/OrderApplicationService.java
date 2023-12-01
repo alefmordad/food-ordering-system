@@ -7,7 +7,7 @@ import com.food.ordering.system.order.service.domain.dto.track.TrackOrderRespons
 
 import javax.validation.Valid;
 
-// valid annotations must not be used in the implementations, but here in the interface
+// mj: valid annotations must not be used in the implementations, but here in the interface
 public interface OrderApplicationService {
 
 	CreateOrderResponse createOrder(@Valid CreateOrderCommand createOrderCommand);

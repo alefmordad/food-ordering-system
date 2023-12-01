@@ -19,6 +19,7 @@ import java.util.function.Function;
 import java.util.stream.Collectors;
 
 @Slf4j
+// mj: no dependency to Spring here
 public class OrderDomainServiceImpl implements OrderDomainService {
 
 	private static final String UTC = "UTC";
@@ -67,7 +68,7 @@ public class OrderDomainServiceImpl implements OrderDomainService {
 	}
 
 	private void setOrderProductInformation(Order order, Restaurant restaurant) {
-		Map<ProductId, Product> idToProductMap = restaurant.getProducts().stream()
+		Map<ProductId, Product> idToProductMap = restaurant.getProducts().stream().distinct()
 				.collect(Collectors.toMap(BaseEntity::getId, Function.identity()));
 		order.getItems().forEach(orderItem -> {
 			Product dbProduct = idToProductMap.get(orderItem.getProduct().getId());

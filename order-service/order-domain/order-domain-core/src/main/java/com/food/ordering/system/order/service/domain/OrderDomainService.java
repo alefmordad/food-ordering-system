@@ -8,20 +8,20 @@ import com.food.ordering.system.order.service.domain.event.OrderPaidEvent;
 
 import java.util.List;
 
-// is somehow similar to `use cases` of clean architecture
-// and application services are not use cases, because they do not have logic
+// mj: is somehow similar to `use cases` of clean architecture
+// mj: and application services are not use cases, because they do not have logic
 public interface OrderDomainService {
 
-	// events are created in domain service, but are fired in application service
-	// naturally domain entities are responsible for creating events, because domain service is not mandatory
-	// domain service is required if we have access to multiple aggregates in business logic
+	// mj: events are created in domain service, but are fired in application service
+	// mj: naturally domain entities are responsible for creating events, because domain service is not mandatory
+	// mj: domain service is required if we have access to multiple aggregates in business logic
 	// 		or having some logic that doesn't fit into any single entity
-	// but, it's ok to have domain services for all entities as well
+	// mj: but, it's ok to have domain services for all entities as well
 	OrderCreatedEvent validateAndInitiateOrder(Order order, Restaurant restaurant);
 
 	OrderPaidEvent payOrder(Order order);
 
-	// no return event because it is an end state
+	// mj: no return event because it is an end state
 	void approveOrder(Order order);
 
 	OrderCancelledEvent cancelOrderPayment(Order order, List<String> failureMessages);

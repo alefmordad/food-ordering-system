@@ -1,4 +1,4 @@
-package com.food.ordering.system.order.service.domain;
+package com.food.ordering.system.order.service.domain.ports.input.service.impl;
 
 import com.food.ordering.system.order.service.domain.dto.create.CreateOrderCommand;
 import com.food.ordering.system.order.service.domain.dto.create.CreateOrderResponse;
@@ -14,8 +14,8 @@ import org.springframework.validation.annotation.Validated;
 @Service
 @Validated
 @RequiredArgsConstructor
-// @Validated here enables @Valid which is on the parameters of methods in interface
-// no need to be public
+// mj: @Validated here enables @Valid which is on the parameters of methods in interface
+// mj: no need to be public
 class OrderApplicationServiceImpl implements OrderApplicationService {
 
 	private final OrderCreateCommandHandler orderCreateCommandHandler;

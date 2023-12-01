@@ -7,7 +7,7 @@ import java.util.Optional;
 
 public interface OrderRepository {
 
-	// converting to JPA entity object
+	// mj: converting to JPA entity object
 	Order save(Order order);
 
 	Optional<Order> findByTrackingId(TrackingId trackingId);

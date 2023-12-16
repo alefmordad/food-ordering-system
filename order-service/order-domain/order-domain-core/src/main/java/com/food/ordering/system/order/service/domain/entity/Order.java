@@ -27,6 +27,8 @@ public class Order extends AggregateRoot<OrderId> {
 	private OrderStatus orderStatus;
 	private List<String> failureMessages;
 
+	public static final String FAILURE_MESSAGE_DELIMITER = ",";
+
 	public void initializeOrder() {
 		// mj: id of order, its trackingId, and its items are filled with order itself
 		// mj: also orderStatus is changed by stateChanger methods

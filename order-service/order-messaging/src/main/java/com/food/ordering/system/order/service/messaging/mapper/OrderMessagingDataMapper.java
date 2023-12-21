@@ -1,6 +1,10 @@
 package com.food.ordering.system.order.service.messaging.mapper;
 
+import com.food.ordering.system.domain.valueobject.OrderApprovalStatus;
+import com.food.ordering.system.domain.valueobject.PaymentStatus;
 import com.food.ordering.system.kafka.order.avro.model.*;
+import com.food.ordering.system.order.service.domain.dto.message.PaymentResponse;
+import com.food.ordering.system.order.service.domain.dto.message.RestaurantApprovalResponse;
 import com.food.ordering.system.order.service.domain.entity.Order;
 import com.food.ordering.system.order.service.domain.event.OrderCancelledEvent;
 import com.food.ordering.system.order.service.domain.event.OrderCreatedEvent;
@@ -57,6 +61,33 @@ public class OrderMessagingDataMapper {
 				.setPrice(order.getPrice().getAmount())
 				.setCreatedAt(orderPaidEvent.getCreatedAt().toInstant())
 				.setRestaurantOrderStatus(RestaurantOrderStatus.PAID)
+				.build();
+	}
+
+	public PaymentResponse paymentResponseAvroModelToPaymentResponse(PaymentResponseAvroModel avroModel) {
+		return PaymentResponse.builder()
+				.id(avroModel.getId())
+				.sagaId(avroModel.getSagaId())
+				.paymentId(avroModel.getPaymentId())
+				.customerId(avroModel.getCustomerId())
+				.orderId(avroModel.getOrderId())
+				.price(avroModel.getPrice())
+				.createdAt(avroModel.getCreatedAt())
+				.paymentStatus(PaymentStatus.valueOf(avroModel.getPaymentStatus().name()))
+				.failureMessages(avroModel.getFailureMessages())
+				.build();
+	}
+
+	public RestaurantApprovalResponse restaurantApprovalResponseAvroModelToRestaurantApprovalResponse
+			(RestaurantApprovalResponseAvroModel avroModel) {
+		return RestaurantApprovalResponse.builder()
+				.id(avroModel.getId())
+				.sagaId(avroModel.getSagaId())
+				.restaurantId(avroModel.getRestaurantId())
+				.orderId(avroModel.getOrderId())
+				.createdAt(avroModel.getCreatedAt())
+				.orderApprovalStatus(OrderApprovalStatus.valueOf(avroModel.getOrderApprovalStatus().name()))
+				.failureMessages(avroModel.getFailureMessages())
 				.build();
 	}
 
